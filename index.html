@@ -1,0 +1,404 @@
+<!--
+StreamHub - 4K Entertainment Center for Safari
+Copyright (c) 2026 Aaron Brown / ApPotato. All Rights Reserved.
+Licensed under CC BY-NC-SA 4.0 - Commercial use prohibited.
+For commercial licensing: 1aaroncbrown@gmail.com
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="StreamHub">
+<title>StreamHub — 4K Entertainment Center</title>
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   CORE & 4K CENTERING
+═══════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#020509;font-family:'Rajdhani',sans-serif;color:#eef4ff;cursor:none}
+#amb{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#amb::before{content:'';position:absolute;width:1800px;height:1400px;top:-300px;left:50%;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(0,80,220,.07),transparent 65%);animation:ab 9s ease-in-out infinite}
+@keyframes ab{0%,100%{opacity:.5;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.18)}}
+
+#stage { position:fixed; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; perspective:2500px; }
+#anchor { position:relative; width:0; height:0; transform-style:preserve-3d; }
+#tint { position:absolute; inset:0; pointer-events:none; transition:background .7s; }
+
+/* ═══════════════════════════════════════
+   3D LOGO CARDS — FIXED SMOOTH ICONS
+═══════════════════════════════════════ */
+.card { position:absolute; left:-300px; top:-200px; width:600px; height:400px; border-radius:40px; border:3px solid rgba(255,255,255,.08); cursor:none; transition:transform .7s cubic-bezier(.34,1.56,.64,1), opacity .6s, box-shadow .5s; will-change:transform,opacity; transform-style:preserve-3d; background:rgba(10,15,25,.6); backdrop-filter:blur(20px); transform-origin:center center; }
+
+.cbg{position:absolute;inset:0;border-radius:37px;overflow:hidden}
+
+/* REMOVED GRID SCANLINES — This was the artifact you saw */
+/* .cbg::before with repeating-linear-gradient = DELETED */
+
+/* SMOOTH GRADIENT OVERLAY — No grid artifacts */
+.cbg::before{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.1) 60%,transparent);z-index:2}
+
+.clogo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translateZ(80px);width:360px;height:auto;max-height:240px;object-fit:contain;z-index:10;filter:drop-shadow(0 30px 40px rgba(0,0,0,.8));transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+  /* ANTI-ALIASING FIX for crisp icons */
+  image-rendering:-webkit-optimize-contrast;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.card.active .clogo{transform:translate(-50%,-50%) translateZ(140px) scale(1.15)}
+
+.ctext-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translateZ(80px);font-family:'Orbitron',sans-serif;font-weight:900;text-align:center;z-index:10;filter:drop-shadow(0 30px 40px rgba(0,0,0,.8));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.card.active .ctext-logo{transform:translate(-50%,-50%) translateZ(140px) scale(1.15)}
+.cl-icon{font-size:120px;margin-bottom:10px}
+.cl-text{font-size:48px;letter-spacing:12px}
+
+.csh{position:absolute;top:0;bottom:0;width:80px;pointer-events:none;z-index:5;opacity:0;transition:opacity .4s;border-radius:37px}
+.csh.l{left:0;background:linear-gradient(90deg,rgba(0,0,0,.7),transparent)}
+.csh.r{right:0;background:linear-gradient(270deg,rgba(0,0,0,.7),transparent)}
+.cgl{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;background:linear-gradient(120deg,rgba(255,255,255,.15),transparent 60%);transition:opacity .4s;border-radius:37px}
+.kripple{position:absolute;inset:0;z-index:8;pointer-events:none;border-radius:40px;border:6px solid var(--glow,#00d4ff);opacity:0}
+.kripple.fire{animation:krf .5s ease-out forwards}
+@keyframes krf{0%{opacity:.9;box-shadow:0 0 0 0 var(--glow,#00d4ff)}100%{opacity:0;box-shadow:0 0 0 80px transparent}}
+
+/* 4K DOTS */
+#dots{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:16px}
+.dt{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.12);cursor:none;transition:all .35s}
+.dt.on{width:50px;border-radius:7px}
+
+/* 4K VOICE */
+#vi{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;transition:opacity .3s}
+#vi.on{opacity:1}
+#vring{width:120px;height:120px;border-radius:50%;border:4px solid var(--glow,#00d4ff);box-shadow:0 0 40px var(--glow,#00d4ff);display:flex;align-items:center;justify-content:center;animation:vpa 1s ease-in-out infinite;background:rgba(0,212,255,.06)}
+@keyframes vpa{0%,100%{box-shadow:0 0 32px var(--glow,#00d4ff)}50%{box-shadow:0 0 64px var(--glow,#00d4ff)}}
+#vbars{display:flex;gap:8px;align-items:center;height:50px}
+.vb{width:8px;border-radius:4px;background:var(--glow,#00d4ff);animation:vba .6s ease-in-out infinite}
+.vb:nth-child(1){height:16px}.vb:nth-child(2){height:36px;animation-delay:.1s}.vb:nth-child(3){height:50px;animation-delay:.2s}.vb:nth-child(4){height:36px;animation-delay:.3s}.vb:nth-child(5){height:16px;animation-delay:.4s}
+@keyframes vba{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+#vtxt{font-family:'Orbitron',sans-serif;font-size:20px;letter-spacing:8px;color:var(--glow,#00d4ff)}
+#vtranscript{font-size:28px;color:rgba(255,255,255,.55);font-style:italic;text-align:center;max-width:800px;padding:0 20px}
+
+/* 4K AIR MOUSE CURSOR */
+#cursor{position:fixed;z-index:9999;pointer-events:none;width:88px;height:88px;border-radius:50%;border:4px solid var(--glow,#00d4ff);box-shadow:0 0 24px var(--glow,#00d4ff);transform:translate(-50%,-50%);opacity:0;transition:width .15s,height .15s,opacity .2s}
+#cursor.on{opacity:1}
+#cursor.hov{width:116px;height:116px}
+#cdot{position:fixed;z-index:10000;pointer-events:none;width:10px;height:10px;border-radius:50%;background:var(--glow,#00d4ff);transform:translate(-50%,-50%);opacity:0;transition:opacity .2s}
+#cdot.on{opacity:.7}
+
+/* SEARCH OVERLAY */
+#so { display:none; position:fixed; inset:0; z-index:1000; background:rgba(2,5,9,.95); backdrop-filter:blur(30px); flex-direction:column; align-items:center; }
+#so.on { display:flex; }
+#sh { width:100%; max-width:1840px; padding:80px 80px 0; flex-shrink:0; }
+#slabel { font-family:'Orbitron',sans-serif; font-size:16px; letter-spacing:6px; color:rgba(0,212,255,.4); margin-bottom:24px; }
+#sbwrap { display:flex; align-items:center; gap:24px; background:rgba(0,212,255,.04); border:2px solid rgba(0,212,255,.2); border-radius:24px; padding:30px 40px; transition:border-color .2s; }
+#sbwrap.active { border-color:rgba(0,212,255,.5); box-shadow:0 0 50px rgba(0,212,255,.1); }
+#sicon { font-size:40px; color:rgba(0,212,255,.5); flex-shrink:0; }
+#sinput { flex:1; background:none; border:none; outline:none; font-family:'Rajdhani',sans-serif; font-size:48px; letter-spacing:3px; color:#eef4ff; caret-color:var(--glow,#00d4ff); }
+#svbtn { width:80px; height:80px; border-radius:50%; border:2px solid rgba(0,212,255,.3); background:rgba(0,212,255,.05); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:32px; transition:all .2s; }
+#svbtn.listening { border-color:var(--glow); background:rgba(0,212,255,.15); }
+
+#sresults { width:100%; max-width:1840px; padding:40px 80px; overflow-y:auto; min-height:0; }
+#rlabel { font-family:'Orbitron',sans-serif; font-size:16px; letter-spacing:4px; color:rgba(255,255,255,.3); margin-bottom:24px; }
+#rgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:28px; }
+.ri { border-radius:16px; overflow:hidden; cursor:pointer; border:2px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); transition:all .2s; position:relative; }
+.ri:hover { border-color:rgba(0,212,255,.4); background:rgba(0,212,255,.05); transform:scale(1.03); }
+.rithumb { width:100%; aspect-ratio:2/3; background:linear-gradient(145deg,#0d1828,#162030); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; font-size:48px; font-weight:900; color:rgba(255,255,255,.1); position:relative; overflow:hidden; }
+.rithumb::after { content:''; position:absolute; inset:0; background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 50%); }
+.risvc { position:absolute; top:12px; right:12px; font-family:'Orbitron',sans-serif; font-size:12px; font-weight:900; letter-spacing:1px; padding:6px 14px; border-radius:6px; border:2px solid; z-index:2; }
+.riinfo { padding:20px 24px; }
+.rititle { font-size:22px; font-weight:600; color:#eef4ff; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rimeta { font-size:16px; color:rgba(255,255,255,.35); }
+
+/* MENU OVERLAY */
+#menu { display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:flex-end; background:rgba(0,0,0,.75); backdrop-filter:blur(20px); }
+#menu.on { display:flex; }
+#mp { width:640px; height:100%; background:linear-gradient(180deg,#0b1220,#070d18); border-left:2px solid rgba(0,212,255,.12); display:flex; flex-direction:column; padding:80px 0 40px; box-shadow:-30px 0 80px rgba(0,0,0,.8); font-size:26px; }
+#mlogo { font-family:'Orbitron',sans-serif; font-size:32px; font-weight:900; letter-spacing:8px; color:#00d4ff; padding:0 60px 40px; border-bottom:2px solid rgba(0,212,255,.08); }
+.mbtn { margin:60px 60px 0; background:rgba(0,212,255,.07); border:2px solid rgba(0,212,255,.2); border-radius:16px; padding:24px; font-family:'Orbitron',sans-serif; font-size:16px; letter-spacing:4px; color:rgba(0,212,255,.7); cursor:pointer; text-align:center; transition:all 0.2s; }
+.mbtn:hover { background:rgba(0,212,255,.15); color:#00d4ff; }
+
+/* LAUNCH ANIMATION */
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+body{animation:fadein .4s ease-in}
+</style>
+</head>
+<body>
+<div id="amb"></div>
+<div id="tint"></div>
+<div id="stage"><div id="anchor"></div></div>
+<div id="dots"></div>
+
+<div id="cursor"></div>
+<div id="cdot"></div>
+
+<div id="vi">
+  <div id="vring">
+    <div id="vbars">
+      <div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div><div class="vb"></div>
+    </div>
+  </div>
+  <div id="vtxt">LISTENING</div>
+  <div id="vtranscript"></div>
+</div>
+
+<div id="so">
+  <div id="sh">
+    <div id="slabel">UNIVERSAL SEARCH</div>
+    <div id="sbwrap">
+      <div id="sicon">🔍</div>
+      <input id="sinput" type="text" placeholder="Search across all services..." autocomplete="off">
+      <div id="svbtn" onclick="startSVoice()">🎤</div>
+    </div>
+  </div>
+  <div id="sresults">
+    <div id="rlabel">START TYPING OR SPEAK</div>
+    <div id="rgrid"></div>
+  </div>
+</div>
+
+<div id="menu">
+  <div id="mp">
+    <div id="mlogo">STREAMHUB</div>
+    <div class="mbtn" onclick="document.documentElement.requestFullscreen();closeMenu()">⛶ FULLSCREEN MODE</div>
+    <div class="mbtn" onclick="alert('PIP: Click video → Picture-in-Picture');closeMenu()">⧉ PICTURE IN PICTURE</div>
+    <div class="mbtn" onclick="alert('Split Screen: Open two services in separate Safari windows');closeMenu()">⬒ SPLIT SCREEN</div>
+    <div class="mbtn" onclick="if(confirm('Clear watch history?'))localStorage.clear();closeMenu()">🗑 CLEAR HISTORY</div>
+    <div class="mbtn" onclick="closeMenu()">✕ CLOSE</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// SERVICES — OPTIMIZED FOR SAFARI 4K
+// ═══════════════════════════════════════
+const SVCS = [
+  {id:'netflix',name:'Netflix',url:'https://www.netflix.com/browse',logo:'https://cdn.worldvectorlogo.com/logos/netflix-3.svg',color:'#e50914'},
+  {id:'disney',name:'Disney+',url:'https://www.disneyplus.com',logo:'https://cdn.worldvectorlogo.com/logos/disney.svg',color:'#113ccf'},
+  {id:'hulu',name:'Hulu',url:'https://www.hulu.com',logo:'https://cdn.worldvectorlogo.com/logos/hulu-2.svg',color:'#1ce783'},
+  {id:'prime',name:'Prime Video',url:'https://www.amazon.com/gp/video/storefront',logo:'https://cdn.worldvectorlogo.com/logos/amazon-prime-video.svg',color:'#00a8e1'},
+  {id:'hbo',name:'Max',url:'https://www.max.com',logo:'https://cdn.worldvectorlogo.com/logos/max-1.svg',color:'#0026ff'},
+  {id:'apple',name:'Apple TV+',url:'https://tv.apple.com',logo:'https://cdn.worldvectorlogo.com/logos/apple-tv.svg',color:'#000'},
+  {id:'youtube',name:'YouTube',url:'https://www.youtube.com/tv',logo:'https://cdn.worldvectorlogo.com/logos/youtube-icon.svg',color:'#ff0000'},
+  {id:'paramount',name:'Paramount+',url:'https://www.paramountplus.com',logo:'https://cdn.worldvectorlogo.com/logos/paramount-plus-1.svg',color:'#0064ff'},
+  {id:'search',name:'Search',url:'#search',icon:'🔍',color:'#00d4ff'}
+];
+
+const SVC_C={netflix:'#e50914',disney:'#113ccf',hulu:'#1ce783',prime:'#00a8e1',hbo:'#0026ff',apple:'#000',youtube:'#ff0000',paramount:'#0064ff'};
+
+// CONTENT CATALOG
+const CAT=[
+  {t:'Stranger Things',g:'Sci-Fi',y:'2016',s:'netflix'},
+  {t:'The Mandalorian',g:'Sci-Fi',y:'2019',s:'disney'},
+  {t:'The Handmaid\'s Tale',g:'Drama',y:'2017',s:'hulu'},
+  {t:'The Boys',g:'Action',y:'2019',s:'prime'},
+  {t:'Succession',g:'Drama',y:'2018',s:'hbo'},
+  {t:'Ted Lasso',g:'Comedy',y:'2020',s:'apple'},
+  {t:'The Last of Us',g:'Drama',y:'2023',s:'hbo'},
+  {t:'Wednesday',g:'Comedy',y:'2022',s:'netflix'},
+  {t:'1923',g:'Western',y:'2022',s:'paramount'},
+];
+
+let cur=0,mode='home',cards=[],recognition=null,recogActive=false,airT=null;
+
+function r2(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`}
+
+function buildCards(){
+  const a=document.getElementById('anchor');
+  SVCS.forEach((s,i)=>{
+    const c=document.createElement('div');c.className='card';
+    const bg=document.createElement('div');bg.className='cbg';
+    if(s.logo){
+      const logo=document.createElement('img');logo.className='clogo';logo.src=s.logo;logo.alt=s.name;
+      bg.appendChild(logo);
+    }else{
+      const tl=document.createElement('div');tl.className='ctext-logo';
+      tl.innerHTML=`<div class="cl-icon">${s.icon}</div><div class="cl-text">${s.name.toUpperCase()}</div>`;
+      bg.appendChild(tl);
+    }
+    const sl=document.createElement('div');sl.className='csh l';
+    const sr=document.createElement('div');sr.className='csh r';
+    const gl=document.createElement('div');gl.className='cgl';
+    const rip=document.createElement('div');rip.className='kripple';
+    c.append(bg,sl,sr,gl,rip);
+    a.appendChild(c);cards.push(c);
+  });
+  
+  const d=document.getElementById('dots');
+  SVCS.forEach((_,i)=>{const dt=document.createElement('div');dt.className='dt';if(i===cur)dt.classList.add('on');dt.style.background=SVCS[i].color;dt.addEventListener('click',()=>{fireRipple(cur);stepTo(i)});d.appendChild(dt)});
+}
+
+function place(){
+  const R=2600,n=cards.length,step=360/n;
+  cards.forEach((c,i)=>{
+    const deg=(i-cur)*step,rad=deg*Math.PI/180;
+    const x=R*Math.sin(rad),z=-R*Math.cos(rad)+R,ry=deg;
+    const dist=Math.abs(i-cur);
+    c.style.transform=`translate3d(${x}px,0,${z}px) rotateY(${ry}deg)`;
+    c.style.opacity=dist<=2?1:.25;
+    c.style.zIndex=1000-dist;
+    c.classList.toggle('active',i===cur);
+    const sl=c.querySelector('.csh.l'),sr=c.querySelector('.csh.r'),gl=c.querySelector('.cgl');
+    sl.style.opacity=ry>0?.6:0;sr.style.opacity=ry<0?.6:0;
+    gl.style.opacity=i===cur?.25:0;
+    document.querySelectorAll('#dots .dt')[i].classList.toggle('on',i===cur);
+  });
+  const cc=SVCS[cur].color;
+  document.getElementById('tint').style.background=r2(cc,.03);
+  document.documentElement.style.setProperty('--glow',cc);
+}
+
+function stepTo(i){cur=i;place()}
+
+function fireRipple(i){
+  const rip=cards[i].querySelector('.kripple');
+  rip.classList.remove('fire');
+  void rip.offsetWidth;
+  rip.classList.add('fire');
+  setTimeout(()=>rip.classList.remove('fire'),500);
+}
+
+function doSel(){
+  const s=SVCS[cur];
+  if(s.id==='search'){openSearch();return;}
+  launchSvc(s);
+}
+
+function launchSvc(s){
+  if(!s.url||s.url==='#search')return;
+  // SAFARI 4K: Open in same window for FairPlay DRM
+  window.location.href=s.url;
+}
+
+function openSearch(){mode='search';document.getElementById('so').classList.add('on');document.getElementById('sbwrap').classList.add('active');document.getElementById('sinput').focus()}
+function closeSearch(){mode='home';document.getElementById('so').classList.remove('on');document.getElementById('sbwrap').classList.remove('active');document.getElementById('sinput').value='';document.getElementById('rgrid').innerHTML='';document.getElementById('rlabel').textContent='START TYPING OR SPEAK'}
+
+function openMenu(){mode='menu';document.getElementById('menu').classList.add('on')}
+function closeMenu(){mode='home';document.getElementById('menu').classList.remove('on')}
+
+function doBack(){
+  if(mode==='search'){closeSearch();return;}
+  if(mode==='menu'){closeMenu();return;}
+}
+
+document.getElementById('sinput').addEventListener('input', runSearch);
+
+function runSearch(){
+  const q=document.getElementById('sinput').value.toLowerCase().trim();
+  const grid=document.getElementById('rgrid'),label=document.getElementById('rlabel');
+  if(!q){grid.innerHTML='';label.textContent='START TYPING OR SPEAK';return;}
+  
+  const matches=CAT.filter(c=>c.t.toLowerCase().includes(q)||c.g.toLowerCase().includes(q)||c.s.toLowerCase().includes(q));
+  label.textContent=`${matches.length} RESULT${matches.length!==1?'S':''} AVAILABLE`;
+  grid.innerHTML='';
+  
+  matches.forEach((item)=>{
+    const el=document.createElement('div');el.className='ri';
+    const sc=SVC_C[item.s]||'#aaa';
+    el.innerHTML=`<div class="rithumb"><span style="position:relative;z-index:1">${item.t.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</span><div class="risvc" style="color:${sc};border-color:${r2(sc,.4)};background:${r2(sc,.12)}">${item.s.toUpperCase()}</div></div><div class="riinfo"><div class="rititle">${item.t}</div><div class="rimeta">${item.g} · ${item.y}</div></div>`;
+    el.addEventListener('click',()=>{
+      const svc=SVCS.find(s=>s.id===item.s);
+      if(svc) {
+        closeSearch();
+        launchSvc(svc);
+      }
+    });
+    grid.appendChild(el);
+  });
+}
+
+function initVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return;
+  recognition=new SR();recognition.continuous=false;recognition.interimResults=true;recognition.lang='en-US';
+  recognition.onstart=()=>{recogActive=true;document.getElementById('vi').classList.add('on');document.getElementById('vtxt').textContent='LISTENING';document.getElementById('vtranscript').textContent=''};
+  recognition.onresult=e=>{let interim='',final='';for(const r of e.results){r.isFinal?final+=r[0].transcript:interim+=r[0].transcript}document.getElementById('vtranscript').textContent=final||interim;if(final)handleVoice(final.trim().toLowerCase())};
+  recognition.onend=()=>{recogActive=false;setTimeout(()=>{document.getElementById('vi').classList.remove('on');document.getElementById('vtranscript').textContent=''},1400)};
+  recognition.onerror=()=>{recogActive=false;document.getElementById('vi').classList.remove('on')};
+}
+
+function startVoice(){
+  if(!recognition) return;
+  if(recogActive){recognition.stop();return;}
+  try{recognition.start()}catch(e){}
+}
+
+function startSVoice(){
+  const btn=document.getElementById('svbtn');
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    btn.classList.add('error');
+    btn.textContent='✕';
+    setTimeout(()=>{btn.classList.remove('error'); btn.textContent='🎤'}, 2000);
+    return;
+  }
+  btn.classList.add('listening');
+  const r=new SR();r.lang='en-US';r.interimResults=false;
+  r.onresult=e=>{document.getElementById('sinput').value=e.results[0][0].transcript;runSearch()};
+  r.onend=()=>btn.classList.remove('listening');
+  r.onerror=()=>btn.classList.remove('listening');
+  r.start();
+}
+
+function handleVoice(cmd){
+  document.getElementById('vtxt').textContent=cmd.slice(0,30).toUpperCase();
+  const openM=cmd.match(/(?:open|launch|go to|switch to)\s+(.+)/);
+  if(openM){
+    const t=openM[1];
+    const svc=SVCS.find(s=>s.id!=='search'&&s.name.toLowerCase().startsWith(t.split(' ')[0]));
+    if(svc){
+      const i = SVCS.findIndex(s=>s.id===svc.id);
+      if(i>=0) stepTo(i);
+      setTimeout(()=>launchSvc(svc),700); return;
+    }
+  }
+  const sM=cmd.match(/(?:search|find|show me|look up)\s+(.+)/);
+  if(sM){
+    const i = SVCS.findIndex(s=>s.id==='search');
+    if(i>=0) stepTo(i);
+    setTimeout(()=>{openSearch();document.getElementById('sinput').value=sM[1];runSearch()},650); return;
+  }
+  if(/\b(next|right)\b/.test(cmd)){fireRipple(cur);stepTo((cur+1)%SVCS.length);return;}
+  if(/\b(previous|back|left)\b/.test(cmd)&&mode==='home'){fireRipple(cur);stepTo((cur-1+SVCS.length)%SVCS.length);return;}
+  if(/\b(select|enter|open)\b/.test(cmd)&&!openM){doSel();return;}
+  if(/\bmenu\b/.test(cmd)){openMenu();return;}
+  if(/\bclose\b/.test(cmd)){doBack();return;}
+}
+
+document.addEventListener('mousemove',e=>{
+  const cu=document.getElementById('cursor'),cd=document.getElementById('cdot');
+  cu.style.left=e.clientX+'px';cu.style.top=e.clientY+'px';cd.style.left=e.clientX+'px';cd.style.top=e.clientY+'px';
+  cu.classList.add('on');cd.classList.add('on');
+  clearTimeout(airT);airT=setTimeout(()=>{cu.classList.remove('on','hov');cd.classList.remove('on')},3000);
+});
+document.addEventListener('mouseover',e=>{if(e.target.closest('.card')||e.target.closest('.ri'))document.getElementById('cursor').classList.add('hov')});
+document.addEventListener('mouseout',()=>document.getElementById('cursor').classList.remove('hov'));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault(); doBack(); return;}
+  if((e.key==='m'||e.key==='M')&&mode==='home'){e.preventDefault();openMenu();return;}
+  if((e.key==='m'||e.key==='M')&&mode==='menu'){e.preventDefault();closeMenu();return;}
+  if(e.key===' '&&mode==='home'){e.preventDefault();startVoice();return;}
+  
+  if(mode==='home'){
+    if(['ArrowLeft','ArrowRight','Enter'].includes(e.key)) e.preventDefault();
+    if(e.key==='ArrowLeft'){fireRipple(cur);stepTo((cur-1+SVCS.length)%SVCS.length);}
+    if(e.key==='ArrowRight'){fireRipple(cur);stepTo((cur+1)%SVCS.length);}
+    if(e.key==='Enter')doSel();
+  }
+});
+
+buildCards(); place(); initVoice();
+
+// PWA INSTALL PROMPT
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  console.log('StreamHub can be installed to desktop/home screen');
+});
+</script>
+</body>
+</html>

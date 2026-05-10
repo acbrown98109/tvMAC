@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="appleRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="50%" stop-color="#E74C3C"/>
+      <stop offset="100%" stop-color="#C0392B"/>
+    </linearGradient>
+    
+    <linearGradient id="potatoBrown" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5C29F"/>
+      <stop offset="50%" stop-color="#D4A574"/>
+      <stop offset="100%" stop-color="#B8905A"/>
+    </linearGradient>
+    
+    <linearGradient id="leafGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#52C41A"/>
+      <stop offset="100%" stop-color="#389E0D"/>
+    </linearGradient>
+    
+    <radialGradient id="shine">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    
+    <filter id="shadow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
+      <feOffset dx="0" dy="6"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="115" fill="#FAFAFA"/>
+  
+  <!-- Main character -->
+  <g transform="translate(256, 280)">
+    
+    <!-- Apple costume shell -->
+    <g filter="url(#shadow)">
+      <circle cx="0" cy="0" r="130" fill="url(#appleRed)"/>
+      <ellipse cx="-35" cy="-45" rx="45" ry="65" fill="url(#shine)"/>
+      
+      <!-- Zipper hint -->
+      <g transform="translate(-125, 0)" opacity="0.15">
+        <rect x="-1.5" y="-60" width="3" height="120" fill="#8B4513" rx="1.5"/>
+        <line x1="-4" y1="-50" x2="4" y2="-50" stroke="#8B4513" stroke-width="1.5"/>
+        <line x1="-4" y1="-30" x2="4" y2="-30" stroke="#8B4513" stroke-width="1.5"/>
+        <line x1="-4" y1="-10" x2="4" y2="-10" stroke="#8B4513" stroke-width="1.5"/>
+        <line x1="-4" y1="10" x2="4" y2="10" stroke="#8B4513" stroke-width="1.5"/>
+        <line x1="-4" y1="30" x2="4" y2="30" stroke="#8B4513" stroke-width="1.5"/>
+        <line x1="-4" y1="50" x2="4" y2="50" stroke="#8B4513" stroke-width="1.5"/>
+      </g>
+      
+      <!-- Leaf -->
+      <g transform="translate(18, -125) rotate(-22)">
+        <ellipse cx="0" cy="0" rx="22" ry="42" fill="url(#leafGreen)"/>
+        <path d="M 0 -42 Q 0 0, 0 42" stroke="#2D7A0D" stroke-width="2" fill="none"/>
+      </g>
+      
+      <!-- THE BITE REVEAL -->
+      <g transform="translate(90, -50)">
+        <circle cx="0" cy="0" r="40" fill="url(#potatoBrown)" stroke="#B8905A" stroke-width="2"/>
+        
+        <!-- Potato spots -->
+        <ellipse cx="-12" cy="-8" rx="8" ry="6" fill="#B8905A" opacity="0.5"/>
+        <ellipse cx="12" cy="4" rx="10" ry="7" fill="#B8905A" opacity="0.4"/>
+        <ellipse cx="-5" cy="15" rx="7" ry="5" fill="#A67C52" opacity="0.5"/>
+        
+        <!-- Circuits in bite -->
+        <g opacity="0.4">
+          <path d="M -18 -4 L -8 -4 L -8 8" stroke="#3498DB" stroke-width="2" fill="none"/>
+          <circle cx="-18" cy="-4" r="2.5" fill="#3498DB"/>
+          <circle cx="-8" cy="8" r="2.5" fill="#3498DB"/>
+        </g>
+      </g>
+      
+      <!-- Potato eyes with chips -->
+      <g transform="translate(-38, -8)">
+        <ellipse cx="0" cy="0" rx="20" ry="16" fill="#C9965C" opacity="0.25"/>
+        <rect x="-10" y="-10" width="20" height="20" rx="2" fill="#2C3E50" opacity="0.75"/>
+        <rect x="-7" y="-7" width="14" height="14" rx="1.5" fill="#34495E"/>
+        <circle cx="0" cy="0" r="4.5" fill="#3498DB"/>
+        <line x1="-10" y1="0" x2="-13" y2="0" stroke="#2C3E50" stroke-width="1.2" opacity="0.5"/>
+      </g>
+      
+      <g transform="translate(38, -8)">
+        <ellipse cx="0" cy="0" rx="20" ry="16" fill="#C9965C" opacity="0.25"/>
+        <rect x="-10" y="-10" width="20" height="20" rx="2" fill="#2C3E50" opacity="0.75"/>
+        <rect x="-7" y="-7" width="14" height="14" rx="1.5" fill="#34495E"/>
+        <circle cx="0" cy="0" r="4.5" fill="#3498DB"/>
+        <line x1="10" y1="0" x2="13" y2="0" stroke="#2C3E50" stroke-width="1.2" opacity="0.5"/>
+      </g>
+      
+      <!-- Nervous smile -->
+      <path d="M -45 38 Q -22 52, 0 54 Q 22 52, 45 38" 
+            stroke="#8B6F47" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+      
+      <!-- Sweat drops -->
+      <ellipse cx="62" cy="-3" rx="5" ry="8" fill="#5DADE2" opacity="0.45"/>
+      <ellipse cx="70" cy="18" rx="4" ry="6" fill="#5DADE2" opacity="0.3"/>
+      
+      <!-- Circuits breaking through -->
+      <g opacity="0.3">
+        <path d="M -95 -40 L -65 -40 L -65 -18" stroke="#3498DB" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="-95" cy="-40" r="4" fill="#3498DB"/>
+        <circle cx="-65" cy="-18" r="4" fill="#3498DB"/>
+        
+        <path d="M 95 45 L 70 45 L 70 25" stroke="#3498DB" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="95" cy="45" r="4" fill="#3498DB"/>
+        <circle cx="70" cy="25" r="4" fill="#3498DB"/>
+      </g>
+      
+    </g>
+    
+  </g>
+  
+  <!-- Brand mark -->
+  <text x="256" y="475" 
+        font-family="'SF Pro Display', 'Helvetica Neue', sans-serif" 
+        font-size="48" 
+        font-weight="900" 
+        fill="#2C3E50" 
+        text-anchor="middle" 
+        letter-spacing="1">
+    Ap
+  </text>
+  
+</svg>
